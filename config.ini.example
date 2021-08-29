@@ -1,6 +1,5 @@
 [slack]
 user_token=xoxp-<YOUR_SLACK_USER_TOKEN>
-bot_token=xoxb-95183609283-2428981199733-FG1mZb8YtePZ1D75nCaUnVs5
 bot_token=xoxb-<YOUR_SLACK_BOT_TOKEN>
 threshold = 2592000  # sec
 exclude_list = ['general','random']
