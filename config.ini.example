@@ -4,3 +4,7 @@ bot_token=xoxb-<YOUR_SLACK_BOT_TOKEN>
 threshold = 2592000  # sec
 exclude_list = ['general','random']
 debug_channel = xxxxxxxx
+bot_message = Hi, I'm slack-archive-reminder.
+    It seems that this channel has not been used for some time.
+    If you will not be using it in the future, consider archiving this channel.
+    How to ? -> https://slack.com/help/articles/213185307
