@@ -8,6 +8,7 @@ import time
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
+now = int(time.time())
 CONFIG_FILE='config.ini'
 config = configparser.ConfigParser()
 config.read(CONFIG_FILE)
@@ -15,8 +16,11 @@ SLACK_USER_TOKEN = config['slack']['user_token']
 SLACK_BOT_TOKEN = config['slack']['bot_token']
 THRESHOLD = int(config['slack']['threshold'])
 EXCLUDE_LIST = (config['slack']['exclude_list'])
-DEBUG_CHANNEL = (config['slack']['debug_channel'])
-now = int(time.time())
+
+DEBUG = False  # set True if test mode
+if DEBUG:
+    DEBUG_CHANNEL = (config['slack']['debug_channel'])
+
 
 """
 ###  get conversations info ###
@@ -43,9 +47,9 @@ except SlackApiError as e:
 """
 client = WebClient(token=SLACK_USER_TOKEN)
 target_convs = {}
-for id,name in convs.items():
+for id, name in convs.items():
     try:
-        response = client.conversations_history(channel=id,limit=1)
+        response = client.conversations_history(channel=id, limit=1)
         ts = int(float(response['messages'][0]['ts']))
         if THRESHOLD < now-ts:
             target_convs[id] = name
@@ -54,19 +58,21 @@ for id,name in convs.items():
         assert e.response["error"]
         print(f"Got an error: {e.response['error']}", file=sys.stderr)
 
+
 """
 ### Post remind message to channel
 #  chat.postMessage
 #  https://api.slack.com/methods/chat.postMessage
 """
 client = WebClient(token=SLACK_BOT_TOKEN)
-for id,name in target_convs.items():
-    text = 'archive message : ' + id + " : " + name  # Todo
+text = config['slack']['bot_message']
+for id, name in target_convs.items():
     try:
-        id = DEBUG_CHANNEL  # debug
+        if DEBUG:
+            id = DEBUG_CHANNEL
         response = client.chat_postMessage(channel=id, text=text)
-        assert response["message"]["text"] == text
     except SlackApiError as e:
         assert e.response["ok"] is False
         assert e.response["error"]
         print(f"Got an error: {e.response['error']}", file=sys.stderr)
+
